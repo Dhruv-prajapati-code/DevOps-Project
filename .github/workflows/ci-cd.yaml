@@ -151,8 +151,8 @@ jobs:
     
       - name: verify rollout
         run: |
-          kubectl rollout status deployment/backend -n demo
-          kubectl rollout status deployment/frontend -n demo
+          kubectl rollout status deployment/backend -n demo-app
+          kubectl rollout status deployment/frontend -n demo-app
 
       - name: making variable of ingree ip
         run: |
