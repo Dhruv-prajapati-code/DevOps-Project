@@ -25,7 +25,7 @@ The application supports:
 
 #  Architecture diagram
 
-![Architecture Diagram](architecture.png)
+![Architecture Diagram](workflow.png)
 
 ---
 
