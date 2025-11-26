@@ -18,23 +18,55 @@ spec:
       labels:
         app: frontend
     spec:
+
+      
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - frontend
+              topologyKey: kubernetes.io/hostname
+
       containers:
         - name: frontend
           image: dhruvprajapaticode/finalassessment-frontend:v3
           ports:
             - containerPort: 80
+
+          
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+
+          
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+          
           livenessProbe:
             httpGet:
               path: /
               port: 80
             initialDelaySeconds: 3
             periodSeconds: 10
+
           readinessProbe:
             httpGet:
               path: /
               port: 80
             initialDelaySeconds: 1
             periodSeconds: 5
+
           env:
             - name: APP_NAME
               valueFrom:

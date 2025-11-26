@@ -18,11 +18,40 @@ spec:
       labels:
         app: backend
     spec:
+
+      
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - backend
+              topologyKey: kubernetes.io/hostname
+
       containers:
         - name: backend
           image: dhruvprajapaticode/finalassessment-backend:v1
           ports:
             - containerPort: 8000   
+
+          
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+
+          
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
           env:
             - name: API_KEY
               valueFrom:
@@ -46,4 +75,4 @@ spec:
   ports:
     - protocol: TCP
       port: 8000
-      targetPort: 8000   
+      targetPort: 8000
