@@ -1,0 +1,21 @@
+1. CrashLoopBackOff – Wrong Command
+command: ["python", "main.py"] → file is app.py.
+
+- This happens because of main.py file instead of app.py file where all our code is.
+
+
+2. Ingress Route Failure
+Ingress routes /backend but backend listens on /api.
+
+-In ingress we have to change path from /backen to /api because in backend listens at /api
+
+
+3. Terraform Backend Error
+Missing bucket/container name.
+
+-In this case either we haven't passed container name of s3 bucket or name is wrong.
+
+4. FluentBit Log Path Bug
+Incorrect path: *.logx instead of *.log.
+
+-We will change path from *.logx to *.log. , because our logs lies in .log files. 
