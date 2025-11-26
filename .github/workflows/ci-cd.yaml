@@ -37,7 +37,7 @@ jobs:
         run: terraform init -backend=true
 
       - name: validate
-        working-directory: terraform
+        working-directory: Terraform
         run: terraform validate
 
     
@@ -91,11 +91,11 @@ jobs:
         uses: hashicorp/setup-terraform@v2
 
       - name: terraform init
-        working-directory: terraform
+        working-directory: Terraform
         run: terraform init
 
       - name: terraform plan
-        working-directory: terraform
+        working-directory: Terraform
         run: terraform plan
 
       - name: docker hub login
