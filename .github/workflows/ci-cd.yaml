@@ -84,8 +84,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
-      - name: Kubeconfig
-        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1
+          export KUBECONFIG=$HOME/.kube/config
+
+      - name: Install AWS IAM Authenticator
+        run: |
+          curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/latest/download/aws-iam-authenticator_$(uname)_amd64
+          chmod +x aws-iam-authenticator
+          sudo mv aws-iam-authenticator /usr/local/bin/
+
+      - name: Test Kubernetes access
+        run: |
+          export KUBECONFIG=$HOME/.kube/config
+          aws eks get-token --cluster-name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1 > /dev/null
+          kubectl get nodes
 
       - name: terraform
         uses: hashicorp/setup-terraform@v2
@@ -119,20 +133,14 @@ jobs:
          aws eks get-token --cluster-name ${{ secrets.EKS_CLUSTER_NAME }}
 
 
-      - name: Install NGINX Ingress Controller
+      - name: Install NGINX Ingress controller
         run: |
-         export KUBECONFIG=$HOME/.kube/config
-    
-         kubectl get nodes
-
-         # install helm
-         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-         helm repo update
-
-         # install ingress controller
-         helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-           --namespace ingress-nginx \
-           --create-namespace
+          export KUBECONFIG=$HOME/.kube/config
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+            --namespace ingress-nginx \
+            --create-namespace
 
 
 
