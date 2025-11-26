@@ -114,14 +114,26 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USER }}/frontend:latest frontend/
           docker push ${{ secrets.DOCKERHUB_USER }}/frontend:latest
 
-
-      - name: Install NGINX Ingress controller
+      - name: Set up AWS CLI EKS authentication
         run: |
-          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          helm repo update
-          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-          --namespace ingress-nginx \
-          --create-namespace
+         aws eks get-token --cluster-name ${{ secrets.EKS_CLUSTER_NAME }}
+
+
+      - name: Install NGINX Ingress Controller
+        run: |
+         export KUBECONFIG=$HOME/.kube/config
+    
+         kubectl get nodes
+
+         # install helm
+         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+         helm repo update
+
+         # install ingress controller
+         helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+           --namespace ingress-nginx \
+           --create-namespace
+
 
 
 
