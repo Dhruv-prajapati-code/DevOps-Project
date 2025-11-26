@@ -153,13 +153,18 @@ jobs:
         run: |
           kubectl rollout status deployment/backend -n demo-app
 
-      - name: making variable of ingree ip
+
+      - name: Get Ingress IP
         run: |
-          IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o wide | awk 'NR==2{print $6}')
+          export KUBECONFIG=$HOME/.kube/config
+          IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx --no-headers | awk '{print $4}')
           echo "INGRESS_IP=$IP" >> $GITHUB_ENV
 
-      - name: smoke test backend api
+
+      - name: Smoke test backend API
         run: |
+          export KUBECONFIG=$HOME/.kube/config
           sleep 10
           kubectl run curl-pod --image=curlimages/curl -i --rm --restart=Never -- \
-          curl http://$INGRESS_IP/backend.demo.svc.cluster.local:8000/health
+          curl http://$INGRESS_IP/backend/health
+
