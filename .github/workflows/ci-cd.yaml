@@ -26,7 +26,7 @@ jobs:
 
       - name: terraform lint
         working-directory: terraform
-        run: terraform init -backend=false
+        run: terraform init -backend=true
 
       - name: validate
         working-directory: terraform
