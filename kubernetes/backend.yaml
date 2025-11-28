@@ -5,11 +5,6 @@ metadata:
   namespace: demo-app
 spec:
   replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
   selector:
     matchLabels:
       app: backend
@@ -19,50 +14,44 @@ spec:
         app: backend
     spec:
 
-      
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - backend
-              topologyKey: kubernetes.io/hostname
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - backend
+                topologyKey: kubernetes.io/hostname
 
       containers:
-        - name: backend
-          image: dhruvprajapaticode/finalassessment-backend:v1
-          ports:
-            - containerPort: 8000   
+      - name: backend
+        image: dhruvprajapaticode/finalassessment-backend:v1
+        ports:
+        - containerPort: 8000
 
-          
-          securityContext:
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
 
-          
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "200m"
-              memory: "256Mi"
-
-          env:
-            - name: API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: app-secret
-                  key: API_KEY
-            - name: APP_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: APP_NAME_BACKEND
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: API_KEY
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_NAME_BACKEND
 ---
 apiVersion: v1
 kind: Service
@@ -73,6 +62,6 @@ spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
-      port: 8000
-      targetPort: 8000
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
