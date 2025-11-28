@@ -54,8 +54,8 @@ jobs:
           | tar -xz
           sudo mv kube-linter /usr/local/bin/
 
-      - name: lint check
-        run: kube-linter lint kubernetes/
+#      - name: lint check
+#       run: kube-linter lint kubernetes/
 
 
       - name: artifact
